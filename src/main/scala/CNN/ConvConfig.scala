@@ -1,0 +1,5 @@
+package CNN
+
+class ConvConfig {
+
+}

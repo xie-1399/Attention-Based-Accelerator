@@ -1,0 +1,21 @@
+package ???
+import spinal.core.sim._
+import org.scalatest.FunSuite
+import workshop.common._
+
+//this is a test template of spinalHDL
+
+class Template extends FunSuite{
+  var compiled:SimCompiled[???] = null
+  test("compile"){
+    compiled = WorkshopSimConfig().compile(new ???)
+  }
+
+  test("testbench"){
+    compiled.doSim(seed = 42){
+      dut =>
+        dut.clockDomain.forkStimulus(10)
+        //Todo write you test logic
+    }
+  }
+}
