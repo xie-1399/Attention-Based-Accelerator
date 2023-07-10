@@ -1,4 +1,5 @@
-package MicroRV32.core
+package CPU.MicroRV32.core
+
 import spinal.core._
 //define some const value of RV
 //F12 = funct12  F3 = funct3  F7 = funct7

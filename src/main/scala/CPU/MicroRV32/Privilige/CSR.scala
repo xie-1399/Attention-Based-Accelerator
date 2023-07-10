@@ -1,4 +1,4 @@
-package MicroRV32.Privilige
+package CPU.MicroRV32.Privilige
 
 import spinal.core._
 

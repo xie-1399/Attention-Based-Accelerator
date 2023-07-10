@@ -1,4 +1,4 @@
-package MicroRV32.core
+package CPU.MicroRV32.core
 
 import spinal.core._
 

@@ -1,4 +1,5 @@
-package MicroRV32.core.Arithmetic
+package CPU.MicroRV32.core.Arithmetic
+
 import spinal.core._
 import spinal.lib._
 import MicroRV32.core._

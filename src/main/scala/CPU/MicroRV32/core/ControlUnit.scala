@@ -1,4 +1,5 @@
-package MicroRV32.core
+package CPU.MicroRV32.core
+
 import spinal.core._
 import spinal.lib._
 import spinal.lib.fsm._
