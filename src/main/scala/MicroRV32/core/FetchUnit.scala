@@ -1,7 +1,7 @@
 package MicroRV32.core
 import spinal.core._
 import spinal.lib._
-
+import Common.spinalConfig._
 
 //Todo support the compressed instruction
 class FetchUnit(rvConfig: CoreConfig) extends Component {
@@ -15,7 +15,7 @@ class FetchUnit(rvConfig: CoreConfig) extends Component {
     val pcIncrement = out(UInt(3 bits))
     //val compressed = rvConfig.compressExtension generate()
   }
-
+  noIoPrefix()
   val instructionBuffer = Reg(Bits(const.instructionWidth bits)) init(0)
 
   //without compress
@@ -32,8 +32,4 @@ class FetchUnit(rvConfig: CoreConfig) extends Component {
     ???
   }
 
-}
-
-object FetchUnit extends App{
-  spinalConfig.setconfig(new FetchUnit(CoreConfig()))
 }

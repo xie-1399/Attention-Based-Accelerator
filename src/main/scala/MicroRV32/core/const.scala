@@ -36,6 +36,7 @@ object const {
     def F12_EBREAK = M"000000000001" //allow break to use Debugger
     def F3_PRIV = M"000" //Todo
 
+
     def F3_JALR = B"000"
     def F3_BEQ = B"000"
     def F3_BNE = B"001"

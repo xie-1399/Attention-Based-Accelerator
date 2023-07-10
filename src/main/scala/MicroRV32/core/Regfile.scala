@@ -1,6 +1,7 @@
 package MicroRV32.core
 import spinal.core._
 import scala.math._
+import Common.spinalConfig._
 // the rggfile of the RV core
 
 case class RegFileIO(addressWidth:Int,dataWidth:Int) extends Bundle{
@@ -25,8 +26,4 @@ class Regfile(addressWidth:Int,dataWidth:Int) extends Component {
   io.rs2Data := regFile.readSync(io.rs2)
   //keep r0 = 0
   regFile.write(io.rd,io.rdData,enable = io.wr && io.rd =/= 0)
-}
-
-object Regfile extends App{
-  spinalConfig.setconfig(new Regfile(5,32))
 }

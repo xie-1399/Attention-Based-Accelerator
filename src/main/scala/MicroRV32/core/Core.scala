@@ -1,5 +1,6 @@
 package MicroRV32.core
 import spinal.core._
+import Common.spinalConfig._
 //the part of rv32 to generate cpu core
 
 case class CoreConfig(resetVector:Long = 0x80000000l,
@@ -26,13 +27,9 @@ case class CoreConfig(resetVector:Long = 0x80000000l,
   val regfileAddressWidth = 5 //32 regs
 }
 
-object spinalConfig{
-  val setconfig = SpinalConfig(mode = Verilog,targetDirectory = "./rtl")
-}
-
 object InstructionType extends SpinalEnum{
   // RV32I
-  val isUndef, isRType, isRImm, isImm, isBranch, isLoad, isStore,
+  val isUndef, isRType, isRImm, isBranch, isLoad, isStore,
   isCT_JAL, isCT_JALR, isLUI, isAUIPC, isECall, isFence, isIllegal,
   // CSR
   isCSR, isCSRImm, isTrapReturn,
@@ -40,4 +37,19 @@ object InstructionType extends SpinalEnum{
   isMulDiv = newElement()
 }
 
+case class IMem() extends Bundle{
+  val instruction = in Bits()
+
+}
+
+//connect the signal between the component
+
+
+
+
+
+
 //generator the core here
+object Core extends App{
+  setconfig()
+}

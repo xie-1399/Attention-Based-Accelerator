@@ -35,6 +35,7 @@ case class DecodeBundle(rvConfig: CoreConfig) extends Bundle{
 
 class DecoderUnit(rvConfig: CoreConfig) extends Component {
   val io = new DecodeBundle(rvConfig)
+  noIoPrefix()
   val extender = new ImmExtensionUnit()
 
   //some wire signal(32 bits)
@@ -215,8 +216,4 @@ class DecoderUnit(rvConfig: CoreConfig) extends Component {
   io.csr_uimm := csr_uimm
   io.validDecode := decoded
   io.csrType := csrAccessType
-}
-
-object DecoderUnit extends App{
-  spinalConfig.setconfig(new DecoderUnit(CoreConfig()))
 }
