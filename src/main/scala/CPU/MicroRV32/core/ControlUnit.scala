@@ -166,7 +166,7 @@ class ControlUnit(rvConfig: CoreConfig) extends Component{
   val fsm = new StateMachine{
     import InstructionType._
     import const.RV32Fields._
-    import MicroRV32.Privilige.CSROpcode._
+    import CPU.MicroRV32.Privilige.CSROpcode._
     //the control logic picture is from
     val stateInit = new State with EntryPoint
     val stateFetch,stateDecode,stateExcute,stateWriteBack,stateTrap,stateCSR,stateInterrupt,stateHalt = new State

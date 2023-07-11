@@ -3,5 +3,7 @@ package Common
 import spinal.core._
 
 object spinalConfig{
-  val setconfig = SpinalConfig(mode = Verilog,targetDirectory = "./rtl")
+  case class RtlConfig(path:String = "rtl",frequency : Int = 50, hdl: SpinalMode = Verilog){
+    def setconfig = SpinalConfig(mode = hdl,targetDirectory = path,defaultClockDomainFrequency = FixedFrequency( frequency MHz))
+  }
 }

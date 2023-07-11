@@ -36,6 +36,13 @@ object RVCSR{
   def MISA_DEFAULT = B(32 bits, (31 downto 30) -> B"01", 8 -> true, default -> false)
   def MSTATUS_DEFAULT = B(32 bits, (12 downto 11) -> B"11", default -> false) //recover the privileged of M
 
+  def TRAP_EXC_INSTR_ADDR_MISALIGN = B(32 bits, 31 -> false, default -> false) | 0
+  def TRAP_EXC_ILLEGAL_INSTR = B(32 bits, 31 -> false, default -> false) | 2
+  def TRAP_EXC_LD_ADDR_MISALIGN = B(32 bits, 31 -> false, default -> false) | 4
+  def TRAP_EXC_ST_ADDR_MISALIGN = B(32 bits, 31 -> false, default -> false) | 6
+  //def TRAP_EXC_ECALL_M_MODE = B(32 bits, 31->false, (30 downto 0) -> 11, default -> false)
+  def TRAP_EXC_ECALL_M_MODE = B(32 bits, 31 -> false, default -> false) | 11
+  def TRAP_MACHINE_TIMER_INTERRUPT = B(32 bits, 31 -> true, default -> false) | 7
 
   //Zicer CSR Extension and set your define csr here
   def MVENDORID_ADDR = U"xF11"

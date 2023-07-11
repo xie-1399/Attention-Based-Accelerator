@@ -2,8 +2,8 @@ package CPU.MicroRV32.core.Arithmetic
 
 import spinal.core._
 import spinal.lib._
-import MicroRV32.core._
-import MicroRV32.core.const._
+import CPU.MicroRV32.core._
+import CPU.MicroRV32.core.const._
 import Common.spinalConfig._
 //the Alu arithmetic
 case class ALUInstruction() extends Bundle{

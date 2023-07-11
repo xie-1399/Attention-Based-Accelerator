@@ -2,7 +2,7 @@ package CPU.MicroRV32.Privilige
 
 import spinal.core._
 import spinal.lib._
-import MicroRV32.core._
+import CPU.MicroRV32.core._
 //control the csr unit of the rv32
 
 class CSRUnit(rvConfig: CoreConfig) extends Area{

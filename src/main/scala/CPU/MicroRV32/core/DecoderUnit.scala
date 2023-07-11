@@ -1,6 +1,6 @@
 package CPU.MicroRV32.core
 
-import MicroRV32.Privilige._
+import CPU.MicroRV32.Privilige._
 import spinal.core._
 import const._
 import spinal.lib._
