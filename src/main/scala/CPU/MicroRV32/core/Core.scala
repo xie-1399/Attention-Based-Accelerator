@@ -286,7 +286,9 @@ class MicroRV32Core(rvConfig: CoreConfig) extends Component {
       extMemData := io.memIF.DataMem.readData
     }
   }
-  rdDataMux := ctrlLogic.io.regCtrl.regRdSel.mux(
+  rdDataMux := ctrlLogic.io.regCtrl.regRdSel.
+
+    mux(
     rdDataSelect.aluResults -> alu.io.output,
     rdDataSelect.aluBool -> B(alu.io.outputBool, 32 bits),
     rdDataSelect.memReadData -> extMemData,

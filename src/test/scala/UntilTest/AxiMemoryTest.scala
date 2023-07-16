@@ -24,7 +24,7 @@ class AxiMemoryTest extends AnyFunSuite {
     compiled = DSASimConfig().compile(new AxiMemory(axiconfig))
   }
 
-  //test for the axi4 write driver
+  //test for the axi4 driver
   test("testbench"){
     compiled.doSim(seed = 42){
       dut =>
