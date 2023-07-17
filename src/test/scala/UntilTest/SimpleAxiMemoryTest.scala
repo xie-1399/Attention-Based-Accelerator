@@ -2,14 +2,14 @@ package UntilTest
 import spinal.core.sim._
 import common._
 import org.scalatest.funsuite.AnyFunSuite
-import Common.Sim._
+import Common.Sim.Bus._
 import spinal.lib.bus.amba4.axi._
 import spinal.lib.sim.ScoreboardInOrder
 
 import scala.util.Random
 
-class AxiMemoryTest extends AnyFunSuite {
-  var compiled:SimCompiled[AxiMemory] = null
+class SimpleAxiMemoryTest extends AnyFunSuite {
+  var compiled:SimCompiled[SimpleAxiMemory] = null
   test("compile"){
     val axiconfig = Axi4Config(
       addressWidth = 10,
@@ -21,7 +21,7 @@ class AxiMemoryTest extends AnyFunSuite {
       useLock = false,
       useQos = false
     )
-    compiled = DSASimConfig().compile(new AxiMemory(axiconfig))
+    compiled = DSASimConfig().compile(new SimpleAxiMemory(axiconfig))
   }
 
   //test for the axi4 driver

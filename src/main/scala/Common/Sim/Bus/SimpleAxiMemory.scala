@@ -1,11 +1,12 @@
-package Common.Sim
+package Common.Sim.Bus
+
 import spinal.core._
 import spinal.lib._
 import spinal.lib.bus.amba4.axi._
 import Common.spinalConfig._
 
 //simple memory to test axi driver
-class AxiMemory(axi4Config: Axi4Config) extends Component {
+class SimpleAxiMemory(axi4Config: Axi4Config) extends Component {
   val io = new Bundle{
     val bus = slave(Axi4(axi4Config))
   }
@@ -58,5 +59,5 @@ object AxiMemory extends App{
     useQos = false
   )
   val rtl = RtlConfig()
-  rtl.setconfig(new AxiMemory(axiconfig))
+  rtl.setconfig(new SimpleAxiMemory(axiconfig))
 }
