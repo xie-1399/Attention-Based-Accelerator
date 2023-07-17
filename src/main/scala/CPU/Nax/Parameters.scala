@@ -12,7 +12,7 @@ object Global extends AreaRoot{
 
 }
 
-object Fetch extends AreaRoot{
+object Fetch extends AreaObject {
   val FETCH_DATA_WIDTH = 64  // two ways fetch once
 
   def SLICE_WIDTH = if (Global.RVC) 16 else 32
@@ -20,6 +20,9 @@ object Fetch extends AreaRoot{
   def SLICE_RANGE_LOW = if (Global.RVC) 1 else 2
 
   def SLICE_COUNT = FETCH_DATA_WIDTH / SLICE_WIDTH
-  def SLICE_RANGE = (SLICE_RANGE_LOW + log2Up(SLICE_COUNT) - 1) downto SLICE_RANGE_LOW  //support rvc -> 2 down to 1
+  def SLICE_RANGE = (SLICE_RANGE_LOW + log2Up(SLICE_COUNT) - 1) downto SLICE_RANGE_LOW  //support rvc -> 2 down to 1 else 2 down to 2
+
+  val FETCH_PC = Stageable(Global.PC)
+  val FETCH_PC_INC  = Stageable(Global.PC)
 
 }
