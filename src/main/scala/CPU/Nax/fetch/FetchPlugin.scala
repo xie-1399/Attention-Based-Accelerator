@@ -1,9 +1,9 @@
-package CPU.Nax.frontend
-import spinal.core._
-import spinal.lib._
-import spinal.lib.pipeline._
-import CPU.Nax.utils._
+package CPU.Nax.fetch
+
 import CPU.Nax.Interface._
+import CPU.Nax.utils._
+import spinal.core._
+import spinal.lib.pipeline._
 
 
 /*

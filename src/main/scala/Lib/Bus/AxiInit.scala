@@ -1,4 +1,4 @@
-package Common.Sim.Bus
+package Lib.Bus
 
 import spinal.lib.bus.amba4.axi._
 import spinal.core.sim._

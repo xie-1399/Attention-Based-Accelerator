@@ -24,5 +24,7 @@ object Fetch extends AreaObject {
 
   val FETCH_PC = Stageable(Global.PC)
   val FETCH_PC_INC  = Stageable(Global.PC)
+  //word depends on the fetch data width
+  val WORD = Stageable(Bits(FETCH_DATA_WIDTH bits))
 
 }

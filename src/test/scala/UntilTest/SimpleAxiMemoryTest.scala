@@ -2,10 +2,9 @@ package UntilTest
 import spinal.core.sim._
 import common._
 import org.scalatest.funsuite.AnyFunSuite
-import Common.Sim.Bus._
+import Lib.Bus._
 import spinal.lib.bus.amba4.axi._
 import spinal.lib.sim.ScoreboardInOrder
-
 import scala.util.Random
 
 class SimpleAxiMemoryTest extends AnyFunSuite {

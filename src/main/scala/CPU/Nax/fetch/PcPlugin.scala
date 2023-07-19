@@ -1,11 +1,13 @@
-package CPU.Nax.frontend
-import CPU.Nax.utils._
-import CPU.Nax.Interface._
-import spinal.core._
-import spinal.lib._
-import scala.collection.mutable.ArrayBuffer
+package CPU.Nax.fetch
+
 import CPU.Nax.Fetch._
 import CPU.Nax.Global._
+import CPU.Nax.Interface._
+import CPU.Nax.utils._
+import spinal.core._
+import spinal.lib._
+
+import scala.collection.mutable.ArrayBuffer
 
 //the pc Plugin show the PC value
 //notice : support compressed / support jump

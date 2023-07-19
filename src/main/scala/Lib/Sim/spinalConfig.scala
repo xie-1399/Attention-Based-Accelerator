@@ -1,4 +1,4 @@
-package Common
+package Lib.Sim
 
 import spinal.core._
 

@@ -1,9 +1,10 @@
-package CPU.Nax.frontend
+package CPU.Nax.fetch
+
 import CPU.Nax.Interface._
 import CPU.Nax.utils._
-import spinal.lib.pipeline._
 import spinal.core._
 import spinal.lib._
+import spinal.lib.pipeline._
 //all stages in the frontend including dispatch
 
 class FrontendPlugin() extends Plugin with LockedImpl {

@@ -1,7 +1,7 @@
 package CPU.MicroRV32.core
 
 import spinal.core._
-import Common.spinalConfig._
+import Lib.Sim.spinalConfig._
 import CPU.MicroRV32.core.Arithmetic._
 import CPU.MicroRV32.Privilige._
 //the part of rv32 to generate cpu core

@@ -2,6 +2,7 @@ package CPU.Nax.Interface
 import spinal.core._
 import spinal.lib._
 import spinal.core.fiber._
+import CPU.Nax.utils._
 
 //Define the Plugin Service here
 trait LockedService{
@@ -39,8 +40,4 @@ trait JumpService extends Service{
 
 trait InitCycles extends Service{
   def initCycles : Int
-}
-
-class Service {
-
 }

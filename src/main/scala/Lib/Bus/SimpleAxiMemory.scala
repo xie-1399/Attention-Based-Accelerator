@@ -1,9 +1,9 @@
-package Common.Sim.Bus
+package Lib.Bus
 
 import spinal.core._
 import spinal.lib._
 import spinal.lib.bus.amba4.axi._
-import Common.spinalConfig._
+import Lib.Sim.spinalConfig._
 
 //simple memory to test axi driver
 class SimpleAxiMemory(axi4Config: Axi4Config) extends Component {

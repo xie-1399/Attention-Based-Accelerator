@@ -3,8 +3,8 @@ package CPU.MicroRV32.core
 import spinal.core
 import spinal.core._
 import spinal.lib._
-import Common.Logger._
-import Common.spinalConfig._
+import lib.Logger._
+import lib.spinalConfig._
 import spinal.lib.misc.{BinTools, HexTools}
 //Memory Unit with Simple Bus
 

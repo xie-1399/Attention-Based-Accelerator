@@ -2,7 +2,7 @@ package CPU.MicroRV32.core
 
 import spinal.core._
 import spinal.lib._
-import Common.spinalConfig._
+import lib.spinalConfig._
 
 //Todo support the compressed instruction
 class FetchUnit(rvConfig: CoreConfig) extends Component {

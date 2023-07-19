@@ -3,7 +3,7 @@ package CPU.MicroRV32.core
 import spinal.core._
 import spinal.lib._
 import spinal.lib.fsm._
-import Common.spinalConfig._
+import lib.spinalConfig._
 
 /*
 control the core work
