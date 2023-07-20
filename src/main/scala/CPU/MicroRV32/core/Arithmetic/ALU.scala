@@ -4,7 +4,6 @@ import spinal.core._
 import spinal.lib._
 import CPU.MicroRV32.core._
 import CPU.MicroRV32.core.const._
-import lib.spinalConfig._
 //the Alu arithmetic
 case class ALUInstruction() extends Bundle{
   val funct3 = in Bits(3 bits)

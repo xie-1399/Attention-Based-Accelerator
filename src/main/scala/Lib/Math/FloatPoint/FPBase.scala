@@ -1,5 +1,4 @@
-package Lib.Math
-
+package Lib.Math.FloatPoint
 import spinal.core._
 
 /*
@@ -14,19 +13,7 @@ case class FPConfig(expSize:Int,mantSize:Int){
   def bias = (1 << (expSize - 1)) - 1
 }
 
-object FloatPoint{
-  //use object get a FP
-  def apply(expSize:Int,mantSize:Int):FloatPoint = {
-    new FloatPoint(FPConfig(expSize = expSize,mantSize = mantSize))
-  }
-
-  def apply(fpConfig: FPConfig): FloatPoint = {
-    new FloatPoint(fpConfig)
-  }
-}
-
-
-class FloatPoint(fpConfig: FPConfig) extends Bundle{
+case class FPBase(fpConfig: FPConfig) extends Bundle{
   val signal = Bool()  //signal
   val exp = UInt(fpConfig.expSize bits)
   val mant = UInt(fpConfig.mantSize bits)
@@ -40,7 +27,7 @@ class FloatPoint(fpConfig: FPConfig) extends Bundle{
   }
 
   //whether is normal number or special number
-  def is_zero():Bool = exp === 0
+  def is_zero():Bool = exp === 0 //just de formal
   def is_Nan():Bool = exp.andR && mant.orR //not a number
   def is_inf():Bool = exp.andR && !mant.orR
 
@@ -56,8 +43,8 @@ class FloatPoint(fpConfig: FPConfig) extends Bundle{
   }
 
   //get abs value
-  def absolute():FloatPoint = {
-    val abs = FloatPoint(fpConfig)
+  def absolute():FPBase = {
+    val abs = FPBase(fpConfig)
     abs.signal := False
     abs.exp := exp
     abs.mant := mant
@@ -73,7 +60,35 @@ class FloatPoint(fpConfig: FPConfig) extends Bundle{
     exp := vec(fpConfig.mantSize,fpConfig.expSize bits).asUInt  //offset , width
     mant := vec(0,fpConfig.mantSize bits).asUInt
   }
-
-
   //Todo convert double to FP
 }
+
+object FPBase{
+  //use object get a FP
+  def apply(expSize:Int,mantSize:Int):FPBase = {
+    FPBase(FPConfig(expSize = expSize,mantSize = mantSize))
+  }
+
+  def apply(fpConfig: FPConfig): FPBase = {
+    FPBase(fpConfig)
+  }
+}
+
+object PipeInit{
+  //the pipe data set initial value
+  def apply[T <: Data](that: T, init: T, enable: Bool, pipeline: Boolean): T = if (pipeline) RegNextWhen(that, enable) init (init) else that
+  def apply[T <: Data](that: T, init: T, pipeline: Boolean): T = apply(that, init, True, pipeline)
+}
+
+object JoinPipe{
+  //create the pipeline value(if no enable -> True)
+  def apply[T <: Data](that : T,enable:Bool,pipeline:Boolean): T = {
+    if(pipeline) RegNextWhen(that,enable) else that
+  }
+  def apply[ T<:Data](that:T,pipeline:Boolean):T = {
+    apply(that,True,pipeline)
+  }
+}
+
+//Todo calculate the leading zero ?
+

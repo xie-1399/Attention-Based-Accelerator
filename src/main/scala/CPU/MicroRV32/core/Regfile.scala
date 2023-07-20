@@ -2,7 +2,6 @@ package CPU.MicroRV32.core
 
 import spinal.core._
 import scala.math._
-import lib.spinalConfig._
 // the rggfile of the RV core
 
 case class RegFileIO(addressWidth:Int,dataWidth:Int) extends Bundle{
