@@ -7,8 +7,6 @@ import spinal.lib.pipeline.Stageable
 /*this is about how to implement Fetch Cache
 * ICache is ReadOnly
 * */
-
-
 case class FetchL1Cmd(physicalWidth:Int) extends Bundle{
   //fetch ir from L1 Cmd
   val address = UInt(physicalWidth bits)

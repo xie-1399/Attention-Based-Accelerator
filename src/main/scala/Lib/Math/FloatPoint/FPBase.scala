@@ -27,8 +27,8 @@ case class FPBase(fpConfig: FPConfig) extends Bundle{
   }
 
   //whether is normal number or special number
-  def is_zero():Bool = exp === 0 //just de formal
-  def is_Nan():Bool = exp.andR && mant.orR //not a number
+  def is_zero():Bool = exp === 0 && mant === 0 //just de formal
+  def is_Nan():Bool = exp.andR && mant.orR //not a number(f != 0 )
   def is_inf():Bool = exp.andR && !mant.orR
 
   def set_Zero() = {
@@ -37,7 +37,7 @@ case class FPBase(fpConfig: FPConfig) extends Bundle{
     mant := 0
   }
 
-  //get the real M (1 + f)
+  //get the real leading 1 (11 -> 111)
   def fullmant(): UInt = {
     (mant.resized(fpConfig.mantSize + 1).asBits | (U(1) << fpConfig.mantSize).asBits).asUInt
   }
