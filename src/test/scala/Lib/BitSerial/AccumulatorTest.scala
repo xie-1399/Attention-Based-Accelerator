@@ -7,7 +7,7 @@ import common._
 
 import scala.util.Random
 
-class Template extends AnyFunSuite{
+class AccumulatorTest extends AnyFunSuite{
   var compiled:SimCompiled[Accumulator] = null
   var bitAdder:SimCompiled[Adder] = null
   test("compile"){

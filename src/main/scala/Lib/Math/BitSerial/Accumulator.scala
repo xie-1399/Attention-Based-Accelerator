@@ -27,7 +27,7 @@ class Accumulator(n:Int) extends Component {
   }
 }
 
-//bit Adder
+//simple bit Adder
 class Adder extends Component{
   val io = new Bundle{
     val bit_rs1 = in UInt(1 bits)

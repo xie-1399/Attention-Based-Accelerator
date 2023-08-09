@@ -1,4 +1,4 @@
-package UntilTest
+package Bus
 import spinal.core.sim._
 import common._
 import org.scalatest.funsuite.AnyFunSuite
