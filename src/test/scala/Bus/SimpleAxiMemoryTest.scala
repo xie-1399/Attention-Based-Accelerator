@@ -1,10 +1,11 @@
 package Bus
 import spinal.core.sim._
-import common._
 import org.scalatest.funsuite.AnyFunSuite
 import Lib.Bus._
+import Lib.Sim.SpinalSim
 import spinal.lib.bus.amba4.axi._
 import spinal.lib.sim.ScoreboardInOrder
+
 import scala.util.Random
 
 class SimpleAxiMemoryTest extends AnyFunSuite {
@@ -20,7 +21,7 @@ class SimpleAxiMemoryTest extends AnyFunSuite {
       useLock = false,
       useQos = false
     )
-    compiled = DSASimConfig().compile(new SimpleAxiMemory(axiconfig))
+    compiled = SpinalSim().compile(new SimpleAxiMemory(axiconfig))
   }
 
   //test for the axi4 driver

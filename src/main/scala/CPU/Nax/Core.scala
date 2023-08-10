@@ -3,7 +3,7 @@ import spinal.core._
 import CPU.Nax.utils._
 import scala.collection.mutable._
 import CPU.Nax.fetch._
-import Lib.Sim.spinalConfig._
+import Lib.Sim.SpinalSim._
 //generate core verilog here and set config here
 
 class Core(val plugins: Seq[Plugin]) extends Component {

@@ -1,9 +1,9 @@
 package Lib.BitSerial
 
 import Lib.Math.BitSerial.{Accumulator, Adder}
+import Lib.Sim.SpinalSim
 import spinal.core.sim._
 import org.scalatest.funsuite.AnyFunSuite
-import common._
 
 import scala.util.Random
 
@@ -11,8 +11,8 @@ class AccumulatorTest extends AnyFunSuite{
   var compiled:SimCompiled[Accumulator] = null
   var bitAdder:SimCompiled[Adder] = null
   test("compile"){
-    compiled = DSASimConfig().compile(new Accumulator(16))
-    bitAdder = DSASimConfig().compile(new Adder)
+    compiled = SpinalSim().compile(new Accumulator(16))
+    bitAdder = SpinalSim().compile(new Adder)
   }
 
   test("testbench"){

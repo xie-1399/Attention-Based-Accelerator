@@ -2,14 +2,16 @@ package CPU.Nax
 
 import spinal.core._
 import spinal.lib.pipeline._
+import spinal.lib.bus.amba4.axi._
 
-//set some parameters in the pipeline
+//set some parameters in the pipeline and Bus
 
 object Global extends AreaRoot{
   val PC_WIDTH = 64
   val RVC = true
   val PC = Stageable(UInt(PC_WIDTH bits))
 
+  val PHYSICAL_WIDTH = 32
 }
 
 object Fetch extends AreaObject {
@@ -26,5 +28,4 @@ object Fetch extends AreaObject {
   val FETCH_PC_INC  = Stageable(Global.PC)
   //word depends on the fetch data width
   val WORD = Stageable(Bits(FETCH_DATA_WIDTH bits))
-
 }

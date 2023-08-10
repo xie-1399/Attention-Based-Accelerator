@@ -1,9 +1,13 @@
 package CPU.Nax.fetch
 
 import CPU.Nax.Fetch._
+import CPU.Nax.utils._
+import CPU.Nax.Interface._
 import spinal.core._
 import spinal.lib._
 import spinal.lib.pipeline.Stageable
+import spinal.lib.bus.amba4.axi._
+
 /*this is about how to implement Fetch Cache
 * ICache is ReadOnly
 * */
@@ -57,6 +61,43 @@ case class FetchL1Bus(physicalWidth:Int,
   def ioSplit():(FetchL1Bus,FetchL1Bus) = split(!_.io) //bus 0 -> get io request
 
   //Todo resizer
+
+  //convert the cmd and rsp with bus signal
+  def toAxi4(): Axi4ReadOnly = new Composite(this, "toAxi4") {
+    val axiConfig = Axi4Config(
+      addressWidth = physicalWidth,
+      dataWidth = dataWidth,
+      idWidth = 0,
+      useId = true,
+      useRegion = false,
+      useBurst = true,
+      useLock = false,
+      useCache = false,
+      useSize = true,
+      useQos = false,
+      useLen = true,
+      useLast = true,
+      useResp = true,
+      useProt = true,
+      useStrb = false
+    )
+
+    val axi = Axi4ReadOnly(axiConfig)
+    axi.ar.valid := cmd.valid
+    axi.ar.addr := cmd.address
+    axi.ar.id := 0
+    axi.ar.prot := B"110"
+    axi.ar.len := lineSize * 8 / dataWidth - 1
+    axi.ar.size := log2Up(dataWidth / 8)
+    axi.ar.setBurstINCR()
+    cmd.ready := axi.ar.ready
+
+    rsp.valid := axi.r.valid
+    rsp.data := axi.r.data
+    rsp.error := !axi.r.isOKAY()
+    axi.r.ready := (if (withBackPresure) rsp.ready else True)
+  }.axi
+
 }
 
 case class FetchBypassSpec(stageId : Int) extends Area{
@@ -64,9 +105,25 @@ case class FetchBypassSpec(stageId : Int) extends Area{
   val data = Stageable(WORD)
 }
 
-
-
-class FetchCachePlugin {
+class FetchCachePlugin(var cacheSize : Int,
+                       var wayCount : Int,
+                       var memDataWidth : Int,
+                       var fetchDataWidth : Int,
+                       var translationStorageParameter : Any,
+                       var translationPortParameter : Any,
+                       var lineSize : Int = 64,
+                       var readAt : Int = 0,
+                       var hitsAt : Int = 1,
+                       var hitAt : Int = 1,
+                       var bankMuxesAt : Int = 1,
+                       var bankMuxAt : Int = 2,
+                       var controlAt : Int = 2,
+                       var injectionAt : Int = 2,
+                       var hitsWithTranslationWays : Boolean = false,
+                       var reducedBankWidth : Boolean = false,
+                       var tagsReadAsync : Boolean = true,
+                       var refillEventId : Int = PerformanceCounterService.ICACHE_REFILL) extends Plugin with FetchPipelineRequirements {
+  override def stagesCountMin: Int = injectionAt + 1
 
 }
 

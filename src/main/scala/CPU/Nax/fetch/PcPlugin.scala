@@ -98,6 +98,7 @@ class PcPlugin(var resetVector:BigInt = 0x80000000l,fetchPcIncAt:Int = 1) extend
 
     //get the next pc
     val pcNext = new Area{
+      //stage 1
       val stage = fetch.getStage(fetchPcIncAt)
       stage(FETCH_PC_INC) := stage(FETCH_PC) + (1 << sliceRange.high + 1 )  // plus 8
       stage(FETCH_PC_INC)(sliceRange.high downto 0) := 0
