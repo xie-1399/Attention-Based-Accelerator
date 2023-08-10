@@ -1,14 +1,13 @@
 package ???
 import spinal.core.sim._
 import org.scalatest.funsuite.AnyFunSuite
-import common._
-
+import Lib.Sim.SpinalSim
 //this is a test template of spinalHDL
 
 class Template extends AnyFunSuite{
   var compiled:SimCompiled[???] = null
   test("compile"){
-    compiled = DSASimConfig().compile(new ???)
+    compiled = SpinalSim().compile(new ???)
   }
 
   test("testbench"){

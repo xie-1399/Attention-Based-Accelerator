@@ -32,8 +32,7 @@ class IntSqrt(inputWidth:Int,outputWidth:Int) extends Component {
       (r.msb ? (U"0" @@ q @@ U"110") | (U"1" @@ ~q @@ U"101")).asSInt)(1, r_next.getWidth bits)
 
     when(!r_next.msb){
-      q_next
-      := q @@ U"1"
+      q_next := q @@ U"1"
     }.otherwise{
       q_next := q @@ U"0"
     }
