@@ -4,6 +4,7 @@ package CPU.TinyCore
 
 import spinal.core._
 import spinal.lib._
+import DecodeInfo._
 import Misc._
 
 class Alu extends Component {

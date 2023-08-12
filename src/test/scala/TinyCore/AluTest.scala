@@ -1,9 +1,9 @@
 package TinyCore
 import spinal.core.sim._
 import org.scalatest.funsuite.AnyFunSuite
-import Lib.Sim.SpinalSim
+import lib.Sim.SpinalSim
 import CPU.TinyCore._
-import CPU.TinyCore.Misc._
+import CPU.TinyCore.DecodeInfo._
 import scala.util.Random
 
 

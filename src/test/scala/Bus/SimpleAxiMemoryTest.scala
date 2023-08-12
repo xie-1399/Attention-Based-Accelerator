@@ -1,8 +1,8 @@
 package Bus
 import spinal.core.sim._
 import org.scalatest.funsuite.AnyFunSuite
-import Lib.Bus._
-import Lib.Sim.SpinalSim
+import lib.Bus._
+import lib.Sim.SpinalSim
 import spinal.lib.bus.amba4.axi._
 import spinal.lib.sim.ScoreboardInOrder
 

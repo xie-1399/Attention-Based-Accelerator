@@ -1,6 +1,9 @@
 package CPU.Nax.misc
 import spinal.lib._
 import spinal.core._
+import CPU.Nax.Interface._
+import CPU.Nax.utils._
+import spinal.lib.pipeline.{Stage, Stageable}
 
 
 // MMU Unit
@@ -48,6 +51,14 @@ object MmuSpec{
   )
 }
 
-class MmuPlugin extends {
+
+class MmuPlugin extends Plugin with AddressTranslationService {
+  override def newStorage(pAny: Any): Any = ???
+
+  override def newTranslationPort(stages: Seq[Stage], preAddress: Stageable[UInt], allowRefill: Stageable[Bool], usage: AddressTranslationPortUsage, portSpec: Any, storageSpec: Any): AddressTranslationRsp = ???
+
+  override def withTranslation: Boolean = ???
+
+  override def invalidatePort: FlowCmdRsp[NoData, NoData] = ???
 
 }
