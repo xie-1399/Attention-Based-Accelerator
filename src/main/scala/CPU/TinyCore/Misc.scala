@@ -8,11 +8,15 @@ object Misc {
   object Config{
     val config = RiscvCoreConfig()  //just set some config here
   }
-
 }
 
 //Decode information here
 object DecodeInfo{
+  //src range here
+  def src0Range = 19 downto 15
+  val src1Range = 24 downto 20
+  val rdRange = 11 downto 7
+
   //pc type
   object PC extends SpinalEnum(binarySequential) {
     //JR = jalr(pc = rs1 + imm)
@@ -38,7 +42,7 @@ object DecodeInfo{
   }
 
   //option num type
-  object OP0 extends SpinalEnum(binarySequential) {
+  object OP0 extends SpinalEnum(binarySequential) { //the binary format
     // IMU ->(like lui) / IMJB(JB IMM) /  IMZ -> for the csr op
     val RS, IMU, IMZ, IMJB = newElement()
     def initial = RS

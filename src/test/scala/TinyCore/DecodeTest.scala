@@ -23,6 +23,7 @@ class DecodeTest extends AnyFunSuite{
   test("instructionCtrl Test"){
     compiled.doSim(seed = 42) {
       dut =>
+        //Todo add more instruction
         dut.clockDomain.forkStimulus(10)
         def generateCode(opretion:String): BigInt = {
           val code = opretion match {
@@ -38,7 +39,6 @@ class DecodeTest extends AnyFunSuite{
           }
           code
         }
-
         //just a simple test it
         val codeName = List[String]("ADD","SUB","SW","LD","ADDI","AUIPC","LUI","JALR")
         for (idx <- 0 until codeName.length){
@@ -49,5 +49,5 @@ class DecodeTest extends AnyFunSuite{
     }
   }
 
-  
+
 }

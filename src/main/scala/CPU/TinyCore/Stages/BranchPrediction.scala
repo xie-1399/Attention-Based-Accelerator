@@ -11,6 +11,4 @@ object disable extends BranchPrediction
 object static extends BranchPrediction
 object dynamic extends BranchPrediction
 
-case class BranchPredictionLine()(implicit p:RiscvCoreConfig) extends Bundle{
-    
-}
+case class BranchPredictionLine()(implicit p:RiscvCoreConfig) extends Bundle{}
