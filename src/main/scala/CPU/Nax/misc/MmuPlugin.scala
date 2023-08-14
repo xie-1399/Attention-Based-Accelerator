@@ -52,13 +52,21 @@ object MmuSpec{
 }
 
 
-class MmuPlugin extends Plugin with AddressTranslationService {
+class MmuPlugin(
+               var spec:MmuSpec,  //mmu type (sv32 or sv39)
+               var physicalWidth:Int,
+               var ioRange:UInt => Bool,
+               var fetchRange:UInt => Bool
+               ) extends Plugin with AddressTranslationService {
+  override def withTranslation: Boolean = true
+  override def invalidatePort = ???
+
   override def newStorage(pAny: Any): Any = ???
 
   override def newTranslationPort(stages: Seq[Stage], preAddress: Stageable[UInt], allowRefill: Stageable[Bool], usage: AddressTranslationPortUsage, portSpec: Any, storageSpec: Any): AddressTranslationRsp = ???
 
-  override def withTranslation: Boolean = ???
 
-  override def invalidatePort: FlowCmdRsp[NoData, NoData] = ???
+
+
 
 }

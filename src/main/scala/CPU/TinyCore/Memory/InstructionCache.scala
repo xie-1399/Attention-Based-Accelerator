@@ -5,6 +5,8 @@ import spinal.core._
 import spinal.lib._
 import spinal.lib.bus.amba4.axi._
 
+//Todo add test and arch about i-cache
+
 // I Cache Config and axi4 bus config
 case class InstructionCacheConfig(cacheSize: Int,
                                   bytePerLine : Int,
@@ -103,7 +105,7 @@ class InstructionCache(implicit p:InstructionCacheConfig) extends Component{
     // all slaves show the bus control the Cache
     val flush = slave (InstructionCacheFlushBus()) //whether to flush the instruction Cache
     val cpu = slave (InstructionCacheCpuBus()) //Cpu <-> Cache
-    val mem = slave (InstructionCacheMemBus()) //Cache <-> Memory
+    val mem = master (InstructionCacheMemBus()) //Cache <-> Memory
   }
   val haltCpu = False
   val lineWidth = 8 * p.bytePerLine
@@ -172,6 +174,7 @@ class InstructionCache(implicit p:InstructionCacheConfig) extends Component{
       ways(0).tags(tagsAddress) := lineInfoWrite
     }
 
+    //Todo maybe refill about it
     val request = requestIn.haltWhen(!io.mem.cmd.ready).m2sPipe()
     io.mem.cmd.valid := requestIn.valid && !request.isStall //not ready
     val wordIndex = Reg(UInt(log2Up(wordPerLine) bits))
@@ -186,12 +189,63 @@ class InstructionCache(implicit p:InstructionCacheConfig) extends Component{
       ways(0).datas(request.address(lineRange) @@ wordIndex) := io.mem.rsp.data
     }
 
+    val readyDelay = Reg(UInt(1 bits)) init 0
+    when(loadedWordsNext === B(loadedWordsNext.bitsRange -> true)){
+      readyDelay := readyDelay + 1
+    }
+    request.ready := readyDelay === 1
+    when(requestIn.ready){
+      wordIndex := io.mem.cmd.address(wordRange)
+      loadedWords := 0
+      loadedWordsReadable := 0
+      readyDelay := 0
+    }
   }
 
   //cpu send cmd and get data from Cache
   val task = new Area {
+    //send the address and cache hit?
     val request = io.cpu.cmd.haltWhen(haltCpu).m2sPipe()
+    request.ready := io.cpu.rsp.fire
+    val waysHitValid = False
+    val waysHitWord = Bits(wordWidth bits)
+    waysHitWord.assignDontCare()
+
+    val waysRead = for(way <- ways) yield new Area {
+
+      val readAddress = Mux(request.isStall,request.address,io.cpu.cmd.address)
+      val tag = way.tags.readSync(readAddress(lineRange))
+      val data = way.datas.readSync(readAddress(lineRange.high downto wordRange.low))
+
+      //tag hit and valid
+      when(tag.valid && tag.address === request.address(tagRange)){
+        waysHitValid := True
+        waysHitWord := data
+      }
+    }
+
+    val loaderHitValid = lineLoader.request.valid && lineLoader.request.address(tagRange) === request.address(tagRange)
+    val loaderHitReady = lineLoader.loadedWordsReadable(request.address(wordRange))
+
+    io.cpu.rsp.valid := request.valid && waysHitValid && !(loaderHitValid && !loaderHitReady)
+    io.cpu.rsp.data := waysHitWord
+    io.cpu.rsp.address := request.address
+    lineLoader.requestIn.valid := request.valid && !waysHitValid
+    lineLoader.requestIn.address := request.address
   }
+  io.flush.cmd.ready := !(lineLoader.request.valid || task.request.valid)
+}
 
 
+object InstructionCache extends App{
+  implicit val p = InstructionCacheConfig(
+    cacheSize = 4096,
+    bytePerLine = 32,
+    wayCount = 1,
+    wrappedMemAccess = false,
+    addressWidth = 32,
+    cpuDataWidth = 32,
+    memDataWidth = 32)
+
+  SpinalVerilog(new InstructionCache()(p))
 }

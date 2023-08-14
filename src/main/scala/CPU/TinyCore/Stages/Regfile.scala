@@ -37,18 +37,22 @@ class Regfile(setName:Boolean = true,regfileReadKind: RegfileReadKind = async) e
   val regfile = Mem(Bits(Global.Xlen bits),32)
 
   def read(addr:UInt,regfileReadKind: RegfileReadKind): Bits = {
-    val data = if(regfileReadKind == async) regfile.readAsync(addr,writeFirst) else regfile.readSync(addr)
-    addr.mux(
-      0 -> B(0,Global.Xlen bits),
+    val data = regfileReadKind match {
+      case `async` => regfile.readAsync(addr,writeFirst)
+      case `sync` => regfile.readSync(addr)
+    }
+    val readData = addr.mux(
+      U(0) -> B(0,Global.Xlen bits),
       default -> data //use write first
     )
+    readData
   }
 
-  //set rgs name for debug and more
+  //set regs name for debug and more
   if (setName) {
     for (i <- 0 until 32) {
       val regWire = Bits(Global.Xlen bits)
-      regWire.setName(s"${i}_" + registerNames(i))
+      regWire.setName(s"_${i}_" + registerNames(i))
       regWire := regfile.readAsync(U(i).resized,writeFirst)  //why can't use read
     }
   }

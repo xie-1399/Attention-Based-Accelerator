@@ -43,7 +43,6 @@ class AluTest extends AnyFunSuite{
             }
           }
         }
-
         bench(dut,5000)
     }
   }
