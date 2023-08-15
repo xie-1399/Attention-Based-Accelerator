@@ -1,6 +1,7 @@
 package CPU.TinyCore.Memory
 
 //implement the instruction Cache
+import lib.Sim.SpinalSim.PrefixComponent
 import spinal.core._
 import spinal.lib._
 import spinal.lib.bus.amba4.axi._
@@ -16,7 +17,7 @@ case class InstructionCacheConfig(cacheSize: Int,
                                   cpuDataWidth : Int,
                                   memDataWidth : Int){
 
-  def burstSize = bytePerLine * 8/memDataWidth
+  def burstSize = bytePerLine * 8/memDataWidth //burst cycle bus can fill one cacheline
 
   def getAxi4ReadOnlyConfig() = Axi4Config(
     addressWidth = addressWidth,
@@ -98,7 +99,7 @@ case class InstructionCacheFlushBus() extends Bundle with IMasterSlave{
   }
 }
 
-class InstructionCache(implicit p:InstructionCacheConfig) extends Component{
+class InstructionCache(implicit p:InstructionCacheConfig) extends PrefixComponent{
   assert(p.wayCount == 1) //direct map
   assert(p.memDataWidth == p.cpuDataWidth)
   val io = new Bundle{
@@ -236,16 +237,3 @@ class InstructionCache(implicit p:InstructionCacheConfig) extends Component{
   io.flush.cmd.ready := !(lineLoader.request.valid || task.request.valid)
 }
 
-
-object InstructionCache extends App{
-  implicit val p = InstructionCacheConfig(
-    cacheSize = 4096,
-    bytePerLine = 32,
-    wayCount = 1,
-    wrappedMemAccess = false,
-    addressWidth = 32,
-    cpuDataWidth = 32,
-    memDataWidth = 32)
-
-  SpinalVerilog(new InstructionCache()(p))
-}

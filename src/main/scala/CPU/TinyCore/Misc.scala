@@ -1,5 +1,6 @@
 package CPU.TinyCore
 import spinal.core._
+import CPU.TinyCore.Memory._
 
 object Misc {
   object Global{
@@ -7,6 +8,15 @@ object Misc {
   }
   object Config{
     val config = RiscvCoreConfig()  //just set some config here
+
+    val instructionCacheConfig = InstructionCacheConfig(
+      cacheSize = 4096,
+      bytePerLine = 32,
+      wayCount = 1,
+      wrappedMemAccess = false,
+      addressWidth = 32,
+      cpuDataWidth = 32,
+      memDataWidth = 32)
   }
 }
 
