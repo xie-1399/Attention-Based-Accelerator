@@ -12,6 +12,7 @@ import lib.Sim.SpinalSim
 import lib.Sim._
 import lib.Sim.StramFlowSim._
 
+
 class FetchTest extends AnyFunSuite{
   var compiled:SimCompiled[InstructionCache] = null
   test("compile"){

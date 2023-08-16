@@ -6,7 +6,7 @@ import spinal.core._
 import spinal.lib._
 import spinal.lib.bus.amba4.axi._
 
-//Todo add test and arch about i-cache
+//Todo add test(update it to mul ways)
 
 // I Cache Config and axi4 bus config
 case class InstructionCacheConfig(cacheSize: Int,
@@ -109,8 +109,8 @@ class InstructionCache(implicit p:InstructionCacheConfig) extends PrefixComponen
     val mem = master (InstructionCacheMemBus()) //Cache <-> Memory
   }
   val haltCpu = False
-  val lineWidth = 8 * p.bytePerLine
-  val lineCount = p.cacheSize / p.bytePerLine
+  val lineWidth = 8 * p.bytePerLine // line bits
+  val lineCount = p.cacheSize / p.bytePerLine //all line numbers
   val wordWidth = Math.max(p.memDataWidth,32)
   val wordWidthLog2 = log2Up(wordWidth)
   val wordPerLine = lineWidth / wordWidth
@@ -129,7 +129,7 @@ class InstructionCache(implicit p:InstructionCacheConfig) extends PrefixComponen
     val address = UInt(tagRange.length bits) //get the tag length
   }
 
-  val ways = Array.fill(wayWordCount)(
+  val ways = Array.fill(p.wayCount)(
     new Area {
       val tags = Mem(lineInfo(),wayLineCount)
       val datas = Mem(Bits(wordWidth bits),wayWordCount)
@@ -142,6 +142,7 @@ class InstructionCache(implicit p:InstructionCacheConfig) extends PrefixComponen
       val address = UInt(p.addressWidth bits)
     })
     if(p.wrappedMemAccess) io.mem.cmd.address := requestIn.address(tagRange.high downto wordRange.low) @@ U(0,wordRange.low bit)
+    //each time get one cache line
     else io.mem.cmd.address := requestIn.address(tagRange.high downto lineRange.low) @@ U(0,lineRange.low bit)
 
     //flush Counter(when flush the cache,stop the cpu)
@@ -175,7 +176,6 @@ class InstructionCache(implicit p:InstructionCacheConfig) extends PrefixComponen
       ways(0).tags(tagsAddress) := lineInfoWrite
     }
 
-    //Todo maybe refill about it
     val request = requestIn.haltWhen(!io.mem.cmd.ready).m2sPipe()
     io.mem.cmd.valid := requestIn.valid && !request.isStall //not ready
     val wordIndex = Reg(UInt(log2Up(wordPerLine) bits))
