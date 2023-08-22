@@ -100,7 +100,7 @@ object DecodeInfo{
     //Todo add more information here like bypass
     val illegal = Bool()  //illegal instruction
     val br = BR()
-    val jump = Bool()
+    val jump = Bool()  //jump or branch
     val op0 = OP0()
     val op1 = OP1()
     val alu = ALU()

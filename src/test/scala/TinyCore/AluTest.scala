@@ -28,6 +28,7 @@ class AluTest extends AnyFunSuite{
             dut.io.src0 #= src0
             dut.io.src1 #= src1
             dut.io.doSub #= randFunc == 3
+
             val value =  if (src0 < src1) 1 else 0
             dut.clockDomain.waitSampling()
             randFunc match {

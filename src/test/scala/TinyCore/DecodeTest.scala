@@ -3,10 +3,11 @@ package TinyCore
 //test the decode unit
 
 import CPU.TinyCore.RiscvCoreConfig
+import CPU.TinyCore.Stages._
 import CPU.TinyCore.Sim._
 import spinal.core.sim._
 import org.scalatest.funsuite.AnyFunSuite
-import lib.Sim.SpinalSim
+import lib.Sim._
 
 
 class DecodeTest extends AnyFunSuite{
@@ -47,6 +48,22 @@ class DecodeTest extends AnyFunSuite{
           dut.clockDomain.waitSampling()
         }
     }
+  }
+}
+
+// another way to use the sim situation
+
+class DecodeSim extends AnyFunSuite{
+  test("sim the decode"){
+    SIMCFG().compile{
+      val config = RiscvCoreConfig()
+      val dut = new Decode()(config)
+      dut
+    }.doSim{
+      dut =>
+
+    }
+
   }
 
 

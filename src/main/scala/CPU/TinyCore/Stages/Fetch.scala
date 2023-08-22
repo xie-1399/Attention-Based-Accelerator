@@ -52,7 +52,6 @@ class Fetch(implicit p : RiscvCoreConfig) extends Component {
   }
   //Fetch stage(get the rsp instruction)
   val Fetch = new Area {
-
     val outInst = Stream(FetchOutput())
     val throwIt = False
     val flush = False

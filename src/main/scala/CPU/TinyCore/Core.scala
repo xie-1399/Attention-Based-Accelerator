@@ -16,7 +16,7 @@ case class RiscvCoreConfig(val pcWidth:Int = 32,
                            val bypassWriteBack : Boolean = true,
                            val bypassWriteBackBuffer : Boolean = true,
                            val fastFetchCmdPcCalculation : Boolean = false,
-                           val branchPrediction: BranchPrediction = static,   //set branch prediction type
+                           val branchPrediction: BranchPrediction = disable,   //set branch prediction type
                            val regfileReadKind : RegfileReadKind = async
                           //Todo add more configs
                           ){

@@ -23,6 +23,7 @@ case class IMM(instruction:Bits) extends Area{
   def j_sext = B((10 downto 0) -> j(19)) ## j ## False
 }
 
+
 case class CoreDecodeOutput()(implicit p:RiscvCoreConfig) extends Bundle {
   val pc = UInt(p.pcWidth bits)
   val instrcution = Bits(32 bits)
@@ -30,22 +31,26 @@ case class CoreDecodeOutput()(implicit p:RiscvCoreConfig) extends Bundle {
   val src0 = Bits(32 bits)
   val src1 = Bits(32 bits)
   val alu_op0 = Bits(32 bits)
+  val alu_op1 = Bits(32 bits)
   val doSub = Bool()
-  //Todo add Branch
+  //for branch prediction and
 }
 
 class Decode(implicit p:RiscvCoreConfig) extends PrefixComponent {
   val io = new Bundle{
     //input IR
-    val inInst = slave Stream(FetchOutput())  //should pipeline while fetch the data
+    val inInst = slave Stream FetchOutput()  //should pipeline while fetch the data
+    val regfileIO = master Stream RegfileIO() //send the RegfileIo to the regfile
+    val decodeOutput = master Stream CoreDecodeOutput()
   }
-  val regfile = new Regfile()
+
   val hazard = Bool()
   val throwIt = False
   val halt = False
   when(hazard){
     halt := True
   }
+  val ctrl = InstructionCtrl(io.inInst.instruction)   //get the ctrl
 
   //get the src values
   val addr0 = io.inInst.instruction(src0Range)
@@ -53,29 +58,53 @@ class Decode(implicit p:RiscvCoreConfig) extends PrefixComponent {
   val addr0IsZero = addr0 === 0
   val addr1IsZero = addr1 === 0
 
-  //Todo read rf add sync
-  val srcInstruction = p.regfileReadKind match {
+  val srcInstruction = p.regfileReadKind match {  //Todo just use asyc
     case `async` => io.inInst.instruction
-    case `sync` => io.inInst.instruction
+    case _ => io.inInst.instruction
   }
   val regFileReadAddress0 = srcInstruction(src0Range).asUInt
   val regFileReadAddress1 = srcInstruction(src1Range).asUInt
 
-  val (src0,src1) = p.regfileReadKind match {
-    case async => (regfile.read(regFileReadAddress0,p.regfileReadKind),regfile.read(regFileReadAddress0,p.regfileReadKind))
-    case sync => (regfile.read(regFileReadAddress0,p.regfileReadKind),regfile.read(regFileReadAddress0,p.regfileReadKind))
-    case _ =>
-  }
-
   val imm = IMM(io.inInst.instruction)
 
-  //add branch here
+  //calculate branch/jump target
+  val brjumpImm = Mux(io.decodeOutput.payload.ctrl.jump,imm.j_sext,imm.b_sext)
+  val brjumpPc = (io.inInst.payload.pc + brjumpImm.asUInt).resize(p.pcWidth)
 
+  //Todo add branch prediction
+  val shouldTakenBranch = Bool()
+  p.branchPrediction match {
+    case `disable` => shouldTakenBranch := False
+  }
+
+  //branch jump
+  val pcLoad = Flow(UInt(p.pcWidth bits))
+  pcLoad.valid := io.inInst.valid && !throwIt && !hazard && io.decodeOutput.ready && (ctrl.br =/= BR.JR && ctrl.br =/= BR.N) && ctrl.illegal && shouldTakenBranch
+  pcLoad.payload := brjumpPc
+
+  io.decodeOutput.arbitrationFrom(io.inInst.throwWhen(throwIt).haltWhen(halt))
+  io.decodeOutput.pc := io.inInst.pc
+  io.decodeOutput.instrcution := io.inInst.instruction
+  io.decodeOutput.ctrl := ctrl
+  io.decodeOutput.doSub := io.decodeOutput.ctrl.alu =/= ALU.ADD
+  io.decodeOutput.src0 := io.regfileIO.payload.rs0Data
+  io.decodeOutput.src1 := io.regfileIO.payload.rs1Data
+  io.decodeOutput.alu_op0 := io.decodeOutput.ctrl.op0.mux(
+    default -> io.decodeOutput.src0,
+    OP0.IMU -> imm.u.resized,
+    OP0.IMZ -> imm.z.resized,
+    OP0.IMJB -> brjumpImm
+  )
+  io.decodeOutput.alu_op1 := io.decodeOutput.ctrl.op1.mux(
+    default -> io.decodeOutput.src1,
+    OP1.IMI -> imm.i_sext.resized,
+    OP1.IMS -> imm.s_sext.resized,
+    OP1.PC -> io.inInst.pc.asBits
+  )
 
   //flush
   val flush = False
   when(flush){
-    //Todo let fetch throw it
     throwIt := True
   }
 }
