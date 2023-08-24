@@ -17,11 +17,15 @@ class Fetch(implicit p : RiscvCoreConfig) extends Component {
     //instruction bus bundle
     val iCmd = master Stream(CoreInstructionCmd()) //send the cmd
     val iRsp = slave Stream(CoreInstructionRsp()) //get the rsp
+    val pcLoad = slave Flow(UInt(p.pcWidth bits)) //for the branch prediction
+    val haltCpu = in Bool()
+    val outInst = master Stream FetchOutput()
   }
+
   noIoPrefix()
   //before Fetch(send instruction request to iCmd)
   val preFetch = new Area {
-    val haltCpu = False
+    val haltCpu = io.haltCpu
     val pc = Reg(UInt(p.pcWidth bits)) init(U(p.startAddress,p.pcWidth bits)) //set initial pc value
     val inc = RegInit(False)
 
@@ -34,25 +38,25 @@ class Fetch(implicit p : RiscvCoreConfig) extends Component {
     }
 
     // branch the pc
-    val pcLoad = Flow(pc)
-    when(pcLoad.valid){
-      pcNext := pcLoad.payload
+    when(io.pcLoad.valid){
+      pcNext := io.pcLoad.payload
     }
+
     val resetDone = RegNext(True) init(False)
     io.iCmd.valid := resetDone && !haltCpu
     io.iCmd.pc := pcNext
-    when(io.iCmd.fire || pcLoad.valid){
+    when(io.iCmd.fire || io.pcLoad.valid){
       pc := pcNext
     }
     when(io.iCmd.fire){
       inc := True
-    }elsewhen(pcLoad.valid){
+    }elsewhen(io.pcLoad.valid){
       inc := False
     }
   }
   //Fetch stage(get the rsp instruction)
   val Fetch = new Area {
-    val outInst = Stream(FetchOutput())
+    val outInst = io.outInst
     val throwIt = False
     val flush = False
     when(flush){
@@ -64,7 +68,7 @@ class Fetch(implicit p : RiscvCoreConfig) extends Component {
       decWhen = io.iRsp.fire
     )
     when(pendingPrefetch === 3){
-      io.iCmd.valid := False  //Todo
+      io.iCmd.valid := False
     }
     val throwRemaining = Reg(UInt(2 bits)) init(0)
     val throwNextIRsp = throwRemaining =/= 0
@@ -78,10 +82,5 @@ class Fetch(implicit p : RiscvCoreConfig) extends Component {
     outInst.arbitrationFrom(io.iRsp.throwWhen(throwIt || throwNextIRsp))
     outInst.pc := io.iRsp.pc
     outInst.instruction := io.iRsp.instruction
-    outInst.ready := True //Todo
   }
-
-  //Todo no pc load(for the branch)
-  preFetch.pcLoad.valid := False
-  preFetch.pcLoad.payload := 0
 }

@@ -10,7 +10,7 @@ import lib.Sim.SpinalSim.PrefixComponent
 
 case class IMM(instruction:Bits) extends Area{
   //get imm value
-  def i = instruction(32 downto 20)
+  def i = instruction(31 downto 20)
   def s = instruction(31 downto 25) ## instruction(11 downto 7)
   def b = instruction(31) ## instruction(7) ## instruction(30 downto 25) ## instruction(11 downto 8)
   def u = instruction(31 downto 12) ## U"x000"
@@ -40,11 +40,14 @@ class Decode(implicit p:RiscvCoreConfig) extends PrefixComponent {
   val io = new Bundle{
     //input IR
     val inInst = slave Stream FetchOutput()  //should pipeline while fetch the data
-    val regfileIO = master Stream RegfileIO() //send the RegfileIo to the regfile
+    val regfileIO = slave (RegfileIO()) //send the RegfileIo to the regfile
     val decodeOutput = master Stream CoreDecodeOutput()
+    val pcLoad = master Flow UInt(p.pcWidth bits)
   }
 
   val hazard = Bool()
+  hazard := False  //use hazard if not get the regfile data
+
   val throwIt = False
   val halt = False
   when(hazard){
@@ -78,17 +81,22 @@ class Decode(implicit p:RiscvCoreConfig) extends PrefixComponent {
   }
 
   //branch jump
-  val pcLoad = Flow(UInt(p.pcWidth bits))
-  pcLoad.valid := io.inInst.valid && !throwIt && !hazard && io.decodeOutput.ready && (ctrl.br =/= BR.JR && ctrl.br =/= BR.N) && ctrl.illegal && shouldTakenBranch
-  pcLoad.payload := brjumpPc
+  io.pcLoad.valid := io.inInst.valid && !throwIt && !hazard && io.decodeOutput.ready && (ctrl.br =/= BR.JR && ctrl.br =/= BR.N) && ctrl.illegal && shouldTakenBranch
+  io.pcLoad.payload := brjumpPc
+
+  io.regfileIO.rs0 := regFileReadAddress0
+  io.regfileIO.rs1 := regFileReadAddress1
+  io.regfileIO.rd := 0
+  io.regfileIO.write := False
+  io.regfileIO.data := 0 //instead the assign don't care
 
   io.decodeOutput.arbitrationFrom(io.inInst.throwWhen(throwIt).haltWhen(halt))
   io.decodeOutput.pc := io.inInst.pc
   io.decodeOutput.instrcution := io.inInst.instruction
   io.decodeOutput.ctrl := ctrl
   io.decodeOutput.doSub := io.decodeOutput.ctrl.alu =/= ALU.ADD
-  io.decodeOutput.src0 := io.regfileIO.payload.rs0Data
-  io.decodeOutput.src1 := io.regfileIO.payload.rs1Data
+  io.decodeOutput.src0 := io.regfileIO.rs0Data
+  io.decodeOutput.src1 := io.regfileIO.rs1Data
   io.decodeOutput.alu_op0 := io.decodeOutput.ctrl.op0.mux(
     default -> io.decodeOutput.src0,
     OP0.IMU -> imm.u.resized,
@@ -99,10 +107,10 @@ class Decode(implicit p:RiscvCoreConfig) extends PrefixComponent {
     default -> io.decodeOutput.src1,
     OP1.IMI -> imm.i_sext.resized,
     OP1.IMS -> imm.s_sext.resized,
-    OP1.PC -> io.inInst.pc.asBits
+    OP1.PC -> io.inInst.pc.asBits.resized
   )
 
-  //flush
+  //flush (connect to the fetch Stage?)
   val flush = False
   when(flush){
     throwIt := True

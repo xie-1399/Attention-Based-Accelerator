@@ -11,13 +11,25 @@ import scala.collection.mutable.ArrayBuffer
 //Add Fetch Sim Component here
 
 //just test the instruction bus(change the config address width to 6)
-class InstructionBusMemory(config:RiscvCoreConfig) extends PrefixComponent{
+class InstructionBusMemory(config:RiscvCoreConfig,fetchNum:Boolean = false) extends PrefixComponent{
   val io = new Bundle{
     val instructionSignal = slave (InstructionBus()(config))
   }
   val iBus = io.instructionSignal.toAxi4ReadOnly()
   val arrayBuffer = ArrayBuffer[BigInt]() //empty array buffer
-  for (i <- 0 until 64) arrayBuffer += i.toBigInt
+  if(fetchNum){
+    for (i <- 0 until 64) arrayBuffer += i.toBigInt
+  }
+  else {
+    //just test some simple instructions
+    arrayBuffer += (
+      0xed428293l, //add
+      0x4c771663l, //bne
+      0xffff8137l, //lui
+      0x01f51513l  //sll
+    )
+    for (i <- 0 until 60) arrayBuffer += 0x00000013
+  }
 
   //set some initial value for reading
   val mem = Mem(Bits(32 bits),64) initBigInt (arrayBuffer.toSeq)
