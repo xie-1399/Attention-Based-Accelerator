@@ -71,6 +71,9 @@ class DecodeSimTest extends AnyFunSuite{
       dut
     }.doSim {
       dut =>
+        dut.clockDomain.forkStimulus(10)
+
+
     }
   }
 

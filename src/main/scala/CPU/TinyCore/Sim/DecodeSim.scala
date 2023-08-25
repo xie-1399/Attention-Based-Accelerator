@@ -24,6 +24,7 @@ class DecodeSim(implicit p:RiscvCoreConfig) extends PrefixComponent {
 
   memory.io.instructionSignal.cmd <> fetch.io.iCmd
   memory.io.instructionSignal.rsp <> fetch.io.iRsp
+
   //connect teh regfile IO
   fetch.Fetch.outInst >-> decode.io.inInst
   fetch.io.pcLoad <> decode.io.pcLoad

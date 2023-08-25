@@ -23,20 +23,22 @@ class InstructionBusMemory(config:RiscvCoreConfig,fetchNum:Boolean = false) exte
   else {
     //just test some simple instructions
     arrayBuffer += (
-      0xed428293l, //add
-      0x4c771663l, //bne
-      0xffff8137l, //lui
-      0x01f51513l  //sll
+      0xed,0x42,0x82,0x93, //add
+      0x4c,0x77,0x16,0x63, //bne
+      0xff,0xff,0x81,0x37, //lui
+      0x01,0xf5,0x15,0x13  //sll
     )
-    for (i <- 0 until 60) arrayBuffer += 0x00000013
+    for (i <- 0 until 12) arrayBuffer += (0x00l,0x00l,0x00l,0x13l)  //nop
   }
 
   //set some initial value for reading
-  val mem = Mem(Bits(32 bits),64) initBigInt (arrayBuffer.toSeq)
+  val mem = Mem(Bits(8 bits),64) initBigInt (arrayBuffer.toSeq)
 
   iBus.ar.ready := RegInit(True).clearWhen(iBus.ar.fire).setWhen(iBus.r.fire)
   iBus.r.valid := RegInit(False).setWhen(iBus.ar.fire).clearWhen(iBus.r.fire)
-  iBus.r.payload.data := mem.readSync(iBus.ar.addr,enable = iBus.ar.fire)
+
+  iBus.r.payload.data := mem.readSync(iBus.ar.addr,enable = iBus.ar.fire) ## mem.readSync(iBus.ar.addr + 1,enable = iBus.ar.fire) ##
+    mem.readSync(iBus.ar.addr + 2,enable = iBus.ar.fire) ## mem.readSync(iBus.ar.addr + 3,enable = iBus.ar.fire)
 }
 
 //Fetch Memory
@@ -46,4 +48,5 @@ class FetchMemory(implicit p:RiscvCoreConfig) extends PrefixComponent{
   memory.io.instructionSignal.cmd <> fetch.io.iCmd
   memory.io.instructionSignal.rsp <> fetch.io.iRsp
 }
+
 

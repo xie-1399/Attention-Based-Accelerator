@@ -27,7 +27,7 @@ object VCS{
 object SIMCFG{
   def apply(gtkFirst:Boolean = false): SpinalSimConfig = {
     sys.env.get("VCS_HOME") match {
-      case Some(_) => if(gtkFirst) VCS.simCfg else CI.simCfg
+      case Some(_) => if(gtkFirst) CI.simCfg else VCS.simCfg
       case None => CI.simCfg
     }
   }

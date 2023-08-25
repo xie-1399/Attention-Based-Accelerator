@@ -25,6 +25,14 @@ object SpinalSim{
     }
   }
 
+  //add tags about the bundle with the simPublic()
+  def addSimPublic(list: List[Data]): Unit = {
+    for(elem <- list){
+      elem simPublic()
+    }
+  }
+
+
   //no Io predix
   class PrefixComponent extends Component{
     noIoPrefix()

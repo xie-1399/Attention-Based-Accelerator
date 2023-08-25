@@ -32,7 +32,7 @@ object InstructionBus{
     useQos = false,
     useLen = false,
     useResp = false,
-    useSize = false
+    useSize = true
   )
 }
 
@@ -57,6 +57,7 @@ case class InstructionBus()(implicit p:RiscvCoreConfig) extends Bundle with IMas
     bus.readCmd.addr := cmd.pc(bus.readCmd.addr.getWidth -1 downto 2) @@ U"00"  //address should align
     bus.readCmd.prot := "110"
     bus.readCmd.cache := "1111"
+    bus.readCmd.size := U(2,3 bits)
 
     cmd.ready := bus.readCmd.ready && !haltCmd
 

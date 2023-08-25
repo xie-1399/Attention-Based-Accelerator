@@ -62,6 +62,7 @@ class Fetch(implicit p : RiscvCoreConfig) extends Component {
     when(flush){
       throwIt := True
     }
+    //store the icmd request until the irsp comes
     val pendingPrefetch = CounterUpDown(
       stateCount = 4,
       incWhen = io.iCmd.fire,
@@ -70,6 +71,8 @@ class Fetch(implicit p : RiscvCoreConfig) extends Component {
     when(pendingPrefetch === 3){
       io.iCmd.valid := False
     }
+
+    //flush the continue rsp (maybe more than one)
     val throwRemaining = Reg(UInt(2 bits)) init(0)
     val throwNextIRsp = throwRemaining =/= 0
     when(throwNextIRsp && io.iRsp.fire){
