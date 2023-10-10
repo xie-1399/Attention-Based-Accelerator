@@ -5,7 +5,7 @@ package tensil.tcu.instruction
 
 import spinal.core._
 import spinal.lib._
-
+import tensil.common._
  /*
  * opcode : define the operation of the DLA
  * flags : show more information about the behaviour
