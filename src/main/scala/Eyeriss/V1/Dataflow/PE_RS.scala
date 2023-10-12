@@ -1,20 +1,21 @@
-package Eyeriss.V1
+package Eyeriss.V1.Dataflow
 
 import DefineSim.SpinalSim.PrefixComponent
 import DefineSim._
+import Utils.Conv._
 import spinal.core._
 import spinal.lib._
+
 import scala.collection.mutable._
-import Utils.Conv._
 
 /*
  * PE contains calculate the MAC between filter and weight
  * this shows very simple way to calculate the MAC with PE Array
  * calculate with the row by row
- * the dataflow is WS
+ * the dataflow is RS and the eyeriss is also RS like
 */
 
-class PE(filterLen:Int,fmapLen:Int,dataWidth:Int) extends PrefixComponent{
+class SimplePE(filterLen:Int,fmapLen:Int,dataWidth:Int) extends PrefixComponent{
   require(filterLen <= fmapLen)
   val io = new Bundle{
     val filterRow = in(Vec(SInt(dataWidth bits),filterLen))
@@ -41,9 +42,11 @@ class PE(filterLen:Int,fmapLen:Int,dataWidth:Int) extends PrefixComponent{
   io.filterRowOut := io.filterRow
 }
 
-/* set PE Array Here in fact it's not pipelined so think about it */
+/* set PE Array Here and can be set with pipe line
+* because each cycle can calculate one line -> the cycle is enough can be out*/
 
-class PEArray (filterRowNum:Int,fmapRowNum:Int,filterLen:Int,fmapLen:Int,dataWidth:Int) extends PrefixComponent{
+class SimplePEArray (filterRowNum:Int,fmapRowNum:Int,
+                     filterLen:Int,fmapLen:Int,dataWidth:Int,passFmap:Boolean = true) extends PrefixComponent{
   require(fmapRowNum >= filterRowNum)
   val io = new Bundle{
     val filterIn = in Vec(Vec(SInt(dataWidth bits),filterLen),filterRowNum)
@@ -52,7 +55,7 @@ class PEArray (filterRowNum:Int,fmapRowNum:Int,filterLen:Int,fmapLen:Int,dataWid
   }
 
   val PEs = Array.fill(filterRowNum,fmapRowNum - filterRowNum + 1){   /* create the PE Array using this way */
-    new PE(filterLen, fmapLen, dataWidth)
+    new SimplePE(filterLen, fmapLen, dataWidth)
   }
 
   /* pass the filter and fmap in */
@@ -76,9 +79,24 @@ class PEArray (filterRowNum:Int,fmapRowNum:Int,filterLen:Int,fmapLen:Int,dataWid
     }
   }
  /* let the feature map in */
-  for (row <- 0 until filterRowNum) {
-    for (col <- 0 until fmapRowNum - filterRowNum + 1) {
-      (PEs(row)(col).io.fmapRow,io.fmapIn(row + col)).zipped.map(_ := _)
+  if(passFmap){
+    for (idx <- 0 until fmapRowNum - filterRowNum + 1) {
+      PEs(0)(idx).io.fmapRow := io.fmapIn(idx)
+    }
+    for (idx <- 1 until filterRowNum) {
+      PEs(idx)(fmapRowNum - filterRowNum).io.fmapRow := io.fmapIn(filterRowNum + idx - 1)
+    }
+    for (row <- 1 until filterRowNum) {
+      for (col <- 0 until fmapRowNum - filterRowNum) {
+        PEs(row)(fmapRowNum - filterRowNum - 1 - col).io.fmapRow := PEs(row - 1)(fmapRowNum - filterRowNum - col).io.fmapRow
+      }
+    }
+  }
+  else{
+    for (row <- 0 until filterRowNum) {
+      for (col <- 0 until fmapRowNum - filterRowNum + 1) {
+        (PEs(row)(col).io.fmapRow, io.fmapIn(row + col)).zipped.map(_ := _)
+      }
     }
   }
 
@@ -89,7 +107,7 @@ class PEArray (filterRowNum:Int,fmapRowNum:Int,filterLen:Int,fmapLen:Int,dataWid
 object PETest extends App {
   import spinal.core.sim._
   SIMCFG(gtkFirst = true).compile{
-    val dut = new PE(3,6,8)
+    val dut = new SimplePE(3,6,8)
     dut
   }.doSim{
     dut =>
@@ -127,7 +145,7 @@ object PEArrayTest extends App{
   import spinal.core.sim._
   SIMCFG(gtkFirst = true).compile {
     /* 3 * 3 filter and 5 * 5 feature map */
-    val dut = new PEArray(3, 5, 3,fmapLen = 5,dataWidth = 8)
+    val dut = new SimplePEArray(3, 5, 3,fmapLen = 5,dataWidth = 8)
     dut
   }.doSim {
     dut =>
