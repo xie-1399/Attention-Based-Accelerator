@@ -41,6 +41,5 @@ class EyerissPE(p:EyerissParameters,filterSpadLen:Int = 225,psumMemLen:Int = 225
     val pSumSRAM = master Stream(SInt(2 * dataWidth bits))
   }
 
-  val stateMachine =
 
 }
