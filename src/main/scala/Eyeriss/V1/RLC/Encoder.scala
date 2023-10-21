@@ -7,10 +7,11 @@ import spinal.lib.fsm._
 
 import scala.math._
 import DefineUntils.Counter.CounterUntil._
+import DefineUntils.Untils._
 
 /* as the feature map data out , it will encode the ofMap data to the DRAM Memory
 * three pair run and level are packed in the out Map
-* should be more complex using the encode */
+* should be more complex using the encode Only support the 3 num and 3 seperately zero*/
 
 case class RLCEncoderParameters(
                                  ofMapWidth:Int = 16,
@@ -37,7 +38,7 @@ class Encoder(p:RLCEncoderParameters,vecLen:Int = 16) extends PrefixComponent{
     /* the of map out the Relu will be UInt  */
     val ofMap = slave Stream(Vec(UInt(ofMapWidth bits),vecLen))
     val outMap = master Stream(OutMapBundle(p))
-    val error = outBool()
+    val error = out Bool()
   }
 
   /* test about the how much coiled zero */
@@ -47,6 +48,13 @@ class Encoder(p:RLCEncoderParameters,vecLen:Int = 16) extends PrefixComponent{
   io.ofMap.ready := !AtProcessing
   io.error := False
   io.outMap.valid := False
+
+  val testNumeric = new Area {
+    val numericOne = dataIn.sCount(x => x =/= 0)
+    when(numericOne =/= 3){
+      io.error := True
+    }
+  }
 
   val outValue = OutMapBundle(p)
   outValue.levelPairs.map(_ := 0)
@@ -112,6 +120,7 @@ class Encoder(p:RLCEncoderParameters,vecLen:Int = 16) extends PrefixComponent{
 
 }
 
+/* generate verilog using this func */
 object Encoder extends App{
   val rtl = new RtlConfig().GenRTL(top = new Encoder(RLCEncoderParameters(),11))
 }

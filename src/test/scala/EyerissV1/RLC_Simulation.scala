@@ -11,6 +11,7 @@ class RLC_Simulation extends AnyFunSuite {
     SIMCFG(gtkFirst = true).compile {
       val dut = new Encoder(RLCEncoderParameters(), 11)
       dut
+
     }.doSim {
       dut =>
         dut.clockDomain.forkStimulus(10)
@@ -31,6 +32,7 @@ class RLC_Simulation extends AnyFunSuite {
           dut.clockDomain.waitSampling()
         }
          comperss(Seq(0,0,12,0,0,0,0,53,0,0,22))
+         comperss(Seq(0,2,0,0,12,0,0,0,0,0,34))
     }
   }
 }
