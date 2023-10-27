@@ -6,7 +6,8 @@ import spinal.core._
 import spinal.lib._
 
 /* the relu function y = z(z > 0 ) and y = 0 (z < 0)
-* and using the relu function can change the SInt to the UInt */
+* and using the relu function can change the SInt to the UInt
+* using fifo to store data first and then deal with it */
 
 case class ActParameters(
                         dataWidth:Int = 16,
@@ -39,36 +40,34 @@ class ReLU(p:ActParameters) extends PrefixComponent{
   }
 
 
-  /* seem the fifo structure is not ready */
-
-  val pipeline = ifGen(pipe){
+  val pipeline = ifGen(pipe) {
     /* build it with pipeline */
 
     val fifo = new FIFO(io.dataIn.payloadType,entries = fifoDepth) /* the fifo is used to save the payload */
-    io.dataIn >-> fifo.io.enqueue
+    fifo.io.enqueue.connectFrom(io.dataIn)
+    val process = RegInit(True)
+    val pass = RegInit(False)
 
-    fifo.io.dequeue.ready := True
-    val pass = False
+    fifo.io.dequeue.ready := process
     io.dataOut.valid := False
 
     val stage1 = new Area {
-      val load = fifo.io.dequeue.payload
-      val sequence = load.map(x => Mux(x > 0, x , zero))
+      val sequence = RegNextWhen(fifo.io.dequeue.payload.map(x => Mux(x > 0, x , zero)).asBits(),fifo.io.dequeue.fire).init(0)
       when(fifo.io.dequeue.fire){
+        process := False
         pass := True
       }
     }
 
     val stage2 = new Area{
       when(pass){
-        fifo.io.dequeue.ready := False
         io.dataOut.valid := True
+        pass := False
+        process := True
       }
-      io.dataOut.payload.assignFromBits(stage1.sequence.asBits())
-
     }
     io.block := fifo.io.count === fifoDepth - 1
-
+    io.dataOut.payload.assignFromBits(stage1.sequence)
   }
 
 }
