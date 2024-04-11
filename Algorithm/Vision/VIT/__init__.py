@@ -1,1 +1,0 @@
-# the vision transformer is the simple encoder-only structure
