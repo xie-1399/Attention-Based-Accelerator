@@ -15,8 +15,7 @@ lazy val projectname = (project in file("."))
     libraryDependencies ++= Seq(spinalCore,
       spinalLib,
       spinalIdslPlugin,
-      "org.scalatest" %% "scalatest" % "3.2.5",
-      "com.lihaoyi" %% "upickle" % "3.1.3"
+      "org.scalatest" %% "scalatest" % "3.2.5"
     )
   )
 
