@@ -14,17 +14,15 @@
 # limitations under the License.
 """ VilT model configuration"""
 
-import logging
-
+from transformers.utils import logging
+from transformers.configuration_utils import PretrainedConfig
 
 logger = logging.get_logger(__name__)
 
-VILT_PRETRAINED_CONFIG_ARCHIVE_MAP = {
-    "dandelin/vilt-b32-mlm": "https://huggingface.co/dandelin/vilt-b32-mlm/blob/main/config.json"
-}
+# from ..deprecated._archive_maps import VILT_PRETRAINED_CONFIG_ARCHIVE_MAP  # noqa: F401, E402
 
 
-class ViltConfig():
+class ViltConfig(PretrainedConfig):
     r"""
     This is the configuration class to store the configuration of a [`ViLTModel`]. It is used to instantiate an ViLT
     model according to the specified arguments, defining the model architecture. Instantiating a configuration with the
@@ -84,7 +82,7 @@ class ViltConfig():
     Example:
 
     ```python
-    >>> from transformers import ViLTModel, ViLTConfig
+    >>> # from transformers import ViLTModel, ViLTConfig
 
     >>> # Initializing a ViLT dandelin/vilt-b32-mlm style configuration
     >>> configuration = ViLTConfig()

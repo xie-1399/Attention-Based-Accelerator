@@ -24,8 +24,9 @@ import torch.utils.checkpoint
 from torch import nn
 from torch.nn import CrossEntropyLoss
 
-from ...activations import ACT2FN
-from ...modeling_outputs import (
+
+from transformers.activations import ACT2FN
+from transformers.modeling_outputs import (
     BaseModelOutput,
     BaseModelOutputWithPooling,
     MaskedLMOutput,
@@ -33,14 +34,14 @@ from ...modeling_outputs import (
     SequenceClassifierOutput,
     TokenClassifierOutput,
 )
-from ...modeling_utils import PreTrainedModel
-from ...pytorch_utils import (
+from transformers.modeling_utils import PreTrainedModel
+from transformers.pytorch_utils import (
     find_pruneable_heads_and_indices,
     meshgrid,
     prune_linear_layer,
 )
-from ...utils import add_start_docstrings, add_start_docstrings_to_model_forward, logging, replace_return_docstrings
-from .configuration_vilt import ViltConfig
+from transformers.utils import add_start_docstrings, add_start_docstrings_to_model_forward, logging, replace_return_docstrings
+from configuration_vilt import ViltConfig
 
 
 logger = logging.get_logger(__name__)

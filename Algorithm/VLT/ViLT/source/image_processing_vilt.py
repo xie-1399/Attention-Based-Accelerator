@@ -19,9 +19,9 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 
-from ...image_processing_utils import BaseImageProcessor, BatchFeature, get_size_dict
-from ...image_transforms import PaddingMode, pad, resize, to_channel_dimension_format
-from ...image_utils import (
+from transformers.image_processing_utils import BaseImageProcessor, BatchFeature, get_size_dict
+from transformers.image_transforms import PaddingMode, pad, resize, to_channel_dimension_format
+from transformers.image_utils import (
     IMAGENET_STANDARD_MEAN,
     IMAGENET_STANDARD_STD,
     ChannelDimension,
@@ -36,7 +36,8 @@ from ...image_utils import (
     validate_kwargs,
     validate_preprocess_arguments,
 )
-from ...utils import TensorType, is_vision_available, logging
+from transformers.utils import TensorType, is_vision_available, logging
+
 
 
 if is_vision_available():
