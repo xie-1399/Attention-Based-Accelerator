@@ -2,7 +2,8 @@
 using the source code to run the ViLT model
 '''
 
-from modeling_vilt import ViltModel,ViltConfig
+from modeling_vilt import ViltModel, ViltConfig, ViltForQuestionAnswering
+from processing_vilt import ViltProcessor
 from huggingface_hub import snapshot_download
 configuration = ViltConfig()
 model = ViltModel(configuration)
@@ -16,7 +17,6 @@ def download(repo_id):
 
 
 def ViltModelUsage():
-    from transformers import ViltProcessor, ViltForQuestionAnswering
     import requests
     from PIL import Image
 

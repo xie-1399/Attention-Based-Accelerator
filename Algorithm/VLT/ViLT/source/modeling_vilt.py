@@ -19,6 +19,7 @@ import math
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
 
+import numpy as np
 import torch
 import torch.utils.checkpoint
 from torch import nn
@@ -347,6 +348,16 @@ class ViltSelfAttention(nn.Module):
         x = x.view(*new_x_shape)
         return x.permute(0, 2, 1, 3)
 
+    def softmax_handle(self,x,dim):
+        exp_values = torch.exp(x - torch.max(x,dim,keepdim=True)[0])
+        return exp_values / torch.sum(exp_values,dim=dim,keepdim = True)
+
+    def softmax_pow2_4(self,x,dim):
+        pow2_value = torch.pow(x - torch.max(x,dim,keepdim=True)[0],2)
+        pow4_value = torch.pow(x - torch.max(x,dim,keepdim=True)[0],4)
+        pow_values = (pow2_value + pow4_value)/2
+        return pow_values / torch.sum(pow_values,dim=dim,keepdim = True)
+
     def forward(self, hidden_states, attention_mask=None, head_mask=None, output_attentions=False):
         mixed_query_layer = self.query(hidden_states)
 
@@ -362,8 +373,9 @@ class ViltSelfAttention(nn.Module):
             # Apply the attention mask is (precomputed for all layers in BertModel forward() function)
             attention_scores = attention_scores + attention_mask
 
-        # Normalize the attention scores to probabilities.
-        attention_probs = nn.Softmax(dim=-1)(attention_scores)
+        # Normalize the attention scores to probabilities. (update it with in power(2))
+        # attention_probs = nn.Softmax(dim=-1)(attention_scores)
+        attention_probs = self.softmax_pow2_4(attention_scores,dim= -1)
 
         # This is actually dropping out entire tokens to attend to, which might
         # seem a bit unusual, but is taken from the original Transformer paper.

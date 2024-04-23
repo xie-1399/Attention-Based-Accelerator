@@ -18,8 +18,6 @@ Processor class for ViLT.
 
 import warnings
 from typing import List, Optional, Union
-
-
 from transformers.processing_utils import ProcessorMixin
 from transformers.tokenization_utils_base import BatchEncoding, PaddingStrategy, PreTokenizedInput, TextInput, TruncationStrategy
 from transformers.utils import TensorType
